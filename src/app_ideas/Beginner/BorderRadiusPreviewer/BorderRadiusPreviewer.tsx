@@ -5,6 +5,10 @@ type MyState = {
     topRight: string,
     bottomLeft: string,
     bottomRight: string
+    css: {
+        [key: string]: string,
+    }
+    result: string
 };
 
 export default class BorderRadiusPreviewer extends React.Component<{}, MyState> {
@@ -14,7 +18,14 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
             topLeft: '0',
             topRight: '0',
             bottomLeft: '0',
-            bottomRight: '0'
+            bottomRight: '0',
+            css: {
+                'border-top-left-radius': '0px',
+                'border-top-right-radius': '0px',
+                'border-bottom-left-radius': '0px',
+                'border-bottom-right-radius': '0px',
+            },
+            result: ''
         };
 
         this.topLeftRadiusChangeHandler.bind(this);
@@ -22,7 +33,8 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
         this.bottomLeftRadiusChangeHandler.bind(this);
         this.bottomRightRadiusChangeHandler.bind(this);
     }
-    checkMaxRadius = (radius: string) => {
+
+    checkMaxRadius = (radius: string): string => {
         if (Number(radius) >= 150) {
             return '150';
         } else {
@@ -31,19 +43,55 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
     };
 
     topLeftRadiusChangeHandler = (event: any) => {
-        this.setState({topLeft: this.checkMaxRadius(event.target.value)});
+        let value = this.checkMaxRadius(event.target.value);
+        this.setState(prevState => ({
+            topLeft: value,
+            css: {
+                ...prevState.css,
+                'border-top-left-radius': value + 'px'
+            }
+        }));
     };
 
     topRightRadiusChangeHandler = (event: any) => {
-        this.setState({topRight: this.checkMaxRadius(event.target.value)});
+        let value = this.checkMaxRadius(event.target.value);
+        this.setState(prevState => ({
+            topRight: value,
+            css: {
+                ...prevState.css,
+                'border-top-right-radius': value + 'px'
+            },
+        }));
     };
 
     bottomLeftRadiusChangeHandler = (event: any) => {
-        this.setState({bottomLeft: this.checkMaxRadius(event.target.value)});
+        let value = this.checkMaxRadius(event.target.value);
+        this.setState(prevState => ({
+            bottomLeft: value,
+            css: {
+                ...prevState.css,
+                'border-bottom-left-radius': value + 'px'
+            },
+        }));
     };
 
     bottomRightRadiusChangeHandler = (event: any) => {
-        this.setState({bottomRight: this.checkMaxRadius(event.target.value)});
+        let value = this.checkMaxRadius(event.target.value);
+        this.setState(prevState => ({
+            bottomRight: value,
+            css: {
+                ...prevState.css,
+                'border-bottom-right-radius': value + 'px'
+            },
+        }));
+    };
+
+    integrate = (): string => {
+        let css_text: string = '';
+        Object.keys(this.state.css).map((el: string): void => {
+            css_text += `${el}: ${this.state.css[el]}\n`;
+        });
+        return css_text;
     };
 
     render() {
@@ -80,14 +128,16 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
                         <input size={Math.max(1, this.state.bottomLeft.length)} maxLength={6}
                                value={this.state.bottomLeft} onChange={this.bottomLeftRadiusChangeHandler}/>
                     </div>
-                    <div style={{ width: '100px',
+                    <div style={{
+                        width: '100px',
                         height: '50px',
                         position: 'absolute',
                         top: '375px',
                         right: '-0px',
-                        textAlign: 'right'}}>
-                    <input size={Math.max(1, this.state.bottomRight.length)} maxLength={6}
-                           value={this.state.bottomRight} onChange={this.bottomRightRadiusChangeHandler}/>
+                        textAlign: 'right'
+                    }}>
+                        <input size={Math.max(1, this.state.bottomRight.length)} maxLength={6}
+                               value={this.state.bottomRight} onChange={this.bottomRightRadiusChangeHandler}/>
                     </div>
 
                     <div style={{
@@ -99,8 +149,11 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
                         borderBottomRightRadius: this.state.bottomRight + 'px'
                     }}>
                     <textarea readOnly={true}
-                              style={{width: '400px', height: '300px', resize: 'none', backgroundColor: '#fafafc',
-                              boxShadow: '2px 4px #888888'}}>
+                              style={{
+                                  width: '400px', height: '300px', resize: 'none', backgroundColor: '#fafafc',
+                                  boxShadow: '2px 4px #888888'
+                              }}
+                              value={this.integrate()}>
                     </textarea>
                     </div>
 
