@@ -21,7 +21,9 @@ export default class JSON2CSV extends React.Component<{}, MyState> {
 
         this.jsonChangeHandler.bind(this);
         this.jsonConvertHandler.bind(this);
+        this.fileSelectHandler.bind(this);
         this.clearHandler.bind(this);
+        this.fileChangeHandler.bind(this);
     }
 
     static isJSON(str: string): boolean {
@@ -79,8 +81,49 @@ export default class JSON2CSV extends React.Component<{}, MyState> {
     };
 
     // clear both json input and csv output
-    clearHandler = ():void => {
-          this.setState({json: '', csv: {title: '', data: ''}});
+    clearHandler = (): void => {
+        this.setState({json: '', csv: {title: '', data: ''}});
+    };
+
+    // select a local file
+    fileSelectHandler = (event: any): void => {
+        event.preventDefault();
+        let fileSelector = document.getElementById('fileSelector');
+
+        // simulate click
+        if (fileSelector) {
+            fileSelector.click();
+        }
+    };
+
+    // read data from a file
+    fileChangeHandler = (event: any): void => {
+        let file = event.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+
+        // clear old data
+        this.clearHandler();
+
+        // set fn when reading
+        reader.onload = (readerEvent: any) => {
+            this.setState(prevState => (
+                {json: String(...prevState.json) + String(readerEvent.target.result)}
+            ));
+        };
+    };
+
+    // download csv file
+    fileDownloadHandler = (): void => {
+        // load data and set file type
+        let file: any = new Blob([this.state.csv.title + this.state.csv.data], {type: 'text/plain'});
+        let download_link: any = document.getElementById("download-link");
+
+        if (download_link && this.state.csv.data !== '') {
+            download_link.href = URL.createObjectURL(file);
+            download_link.download = 'data.csv';
+            download_link.click();
+        }
     };
 
     render() {
@@ -99,8 +142,18 @@ export default class JSON2CSV extends React.Component<{}, MyState> {
                     <button style={{width: '100px', height: '50px', backgroundColor: 'lightgreen'}}
                             onClick={this.jsonConvertHandler}>convert
                     </button>
-                    <button  style={{width: '100px', height: '50px', backgroundColor: 'lightblue'}}
-                             onClick={this.clearHandler}>clear</button>
+                    <button style={{width: '100px', height: '50px', backgroundColor: 'lightblue'}}
+                            onClick={this.clearHandler}>clear
+                    </button>
+                    <button style={{width: '100px', height: '50px', backgroundColor: 'lightyellow'}}
+                            onClick={this.fileSelectHandler}>open
+                    </button>
+                    <button style={{width: '100px', height: '50px', backgroundColor: 'lightgray'}}
+                            onClick={this.fileDownloadHandler}>save
+                    </button>
+                    <input id={'fileSelector'} className={'inputFile'} type="file" style={{display: 'none'}}
+                           onChange={this.fileChangeHandler}/>
+                    <a href={''} id={'download-link'} style={{display: 'none'}}/>
                 </div>
             </div>
         )
