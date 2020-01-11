@@ -156,8 +156,6 @@ export default class BorderRadiusPreviewer extends React.Component<{}, MyState> 
                               value={this.integrate()}>
                     </textarea>
                     </div>
-
-                    {/*<button style={{width: '400px', backgroundColor:'lightblue', height: '50px'}}>copy</button>*/}
                 </div>
             </>
         );
