@@ -26,7 +26,7 @@ export default class Bin2Dec extends React.Component<{}, MyState> {
 
         // check if only contains 0 or 1
         input.split('').map((el: string) => {
-            if (Number(el) > 1 || Number(el) < 0) {
+            if (Number(el) !== 1 && Number(el) !== 0) {
                 ERROR = 1;
             }
         });
@@ -36,9 +36,9 @@ export default class Bin2Dec extends React.Component<{}, MyState> {
         }
 
         // convert to dec
-        for (let i = 0; i < input.length; i++) {
-            result += Number(input.charAt(i)) * Math.pow(2, input.length - 1 - i);
-        }
+        input.split('').reverse().map((el: string, index: number) => {
+            result += Number(el) * Math.pow(2, index);
+        });
 
         return result;
     }
