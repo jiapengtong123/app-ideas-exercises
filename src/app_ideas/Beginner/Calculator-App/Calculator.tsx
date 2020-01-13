@@ -54,20 +54,17 @@ export default class Calculator extends React.Component<{}, MyState> {
     };
 
     performOperation = () => {
-        console.log(this.state.prevValue);
-        console.log(this.state.nextValue);
-        console.log(this.state.operator);
         this.setState({
             value: ((): string => {
                 switch (this.state.operator) {
                     case '+':
-                        return (Number(this.state.prevValue) + Number(this.state.value)).toString();
+                        return (Number(this.state.prevValue) + Number(this.state.nextValue)).toString();
                     case '-':
-                        return (Number(this.state.prevValue) - Number(this.state.value)).toString();
+                        return (Number(this.state.prevValue) - Number(this.state.nextValue)).toString();
                     case '*':
-                        return (Number(this.state.prevValue) * Number(this.state.value)).toString();
+                        return (Number(this.state.prevValue) * Number(this.state.nextValue)).toString();
                     case '/':
-                        return (Number(this.state.prevValue) / Number(this.state.value)).toString();
+                        return (Number(this.state.prevValue) / Number(this.state.nextValue)).toString();
                     default:
                         return '';
                 }
@@ -86,21 +83,23 @@ export default class Calculator extends React.Component<{}, MyState> {
             // clear all data
             this.setState({value: '0', prevValue: '', nextValue: '', operator: ''});
         } else if (this.isDigit(str)) {
-            console.log('digit');
-            if (this.state.prevValue === '') {
+            // if no operator, set the first value
+            if (this.state.operator === '') {
                 this.setState(prevState => ({
                     ...prevState,
-                    value: prevState.value + str
+                    value: prevState.prevValue + str,
+                    prevValue: prevState.prevValue + str
                 }));
             } else if (this.state.operator !== '') {
+                // if has operator, set the second value
                 this.setState(prevState => ({
                     ...prevState,
-                    value: str
+                    value: prevState.nextValue + str,
+                    nextValue: prevState.nextValue + str
                 }));
             }
 
         } else if (this.isOperator(str)) {
-            console.log('operator');
             // set the operator
             this.setState(prevState => ({
                 ...prevState,
@@ -109,7 +108,6 @@ export default class Calculator extends React.Component<{}, MyState> {
             }));
 
         } else if (str === '=') {
-            console.log('nextValue'+ this.state.value);
             this.setState(prevState => ({
                 ...prevState,
                 nextValue: this.state.value
